@@ -20,6 +20,9 @@
     ],
     "linebreak-style": ["error", "windows"],
     "quotes": [2, "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+    "react/prop-types": 0,
+    "react/no-unused-prop-types":"off",
+    "react/require-default-props": "off",
     "import/no-extraneous-dependencies": [
       "error",
       {

@@ -1,24 +1,49 @@
 import Image from 'next/image';
+import { convertedDate } from '@/helper/convertedDate';
+import { convertedNumber } from '@/helper/convertedNumber';
+import { getTextAboutApartment } from '@/helper/getTextAboutApartment';
 import like from '../public/like.png';
 import apartment from '../public/apartment.png';
 
-const Item = () => (
-  <div className="pt-3 pb-12 px-12 w-1/3 rounded-base border ">
+type ItemProps = {
+  item: {
+    id:number,
+    project_title?:string,
+    rooms:number,
+    studio?:boolean,
+    price:string,
+    old_price: string,
+    square:string,
+    release_dates: string,
+    floor: string,
+    image: string,
+  }
+};
+
+const Item = ({ item }:ItemProps) => (
+
+  <div className="pt-3 pb-12 px-10 w-[580px] rounded-base border ">
     <div className="flex justify-between items-center">
-      <div className="text-text mb-2">
-        <p className="pt-5 text-xl">1-комнатная 21,2 м2</p>
-        <div className="flex items-center gap-x-[21px]">
-          <p className="pt-2 text-4xl font-semibold flex-nowrap">4 040 000 ₽</p>
+      <div className="text-text">
+        <p className="pt-4 text-xl">
+          {getTextAboutApartment(item.rooms, item.square)}
+
+        </p>
+        <div className=" pt-2 flex items-center gap-x-[21px]">
+          <p className=" text-4xl font-semibold flex-nowrap">
+            { convertedNumber(item.price)}
+          </p>
           <p className="pt-4 font-semibold text-xs line-through flex-nowrap">
-            7 700 000 ₽
+            { convertedNumber(item.old_price)}
+
           </p>
         </div>
       </div>
-      <div className="">
+      <div className="cursor-pointer">
         <Image src={like} width={55} height={55} alt="" />
       </div>
     </div>
-    <div className="flex justify-center pt-10">
+    <div className="flex justify-center pt-12">
       <Image src={apartment} width={165} height={287} alt="" />
     </div>
     <div className="pt-14 pb-1 flex justify-between items-center border-b-2">
@@ -27,11 +52,15 @@ const Item = () => (
     </div>
     <div className="pt-1 pb-1 flex justify-between items-center border-b-2">
       <p>Этаж</p>
-      <p>2 из 14</p>
+      <p>
+        {item.floor}
+        {' '}
+        из 14
+      </p>
     </div>
     <div className="pt-2 flex justify-between items-center ">
       <p>Срок сдачи</p>
-      <p>II квартал 2025</p>
+      <p>{(convertedDate(item.release_dates))}</p>
     </div>
   </div>
 );
