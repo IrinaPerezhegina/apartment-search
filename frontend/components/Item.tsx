@@ -22,7 +22,7 @@ type ItemProps = {
 
 const Item = ({ item }:ItemProps) => (
 
-  <div className="pt-3 pb-12 px-10 w-[580px] rounded-base border ">
+  <div className="delay-100  pt-3 pb-12 px-10 w-[580px] rounded-base border ">
     <div className="flex justify-between items-center">
       <div className="text-text">
         <p className="pt-4 text-xl">
