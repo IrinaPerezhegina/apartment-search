@@ -4,10 +4,55 @@ import React, {
 } from 'react';
 import Spinner from '@/components/Spinner';
 import Select from '@/components/ui/Select';
+import Layout from '@/components/Layout';
+import Checkbox from '@/components/ui/Checkbox';
+import DoubleRangeInput from '@/components/ui/DoubleRangeInput';
 import Item from '../components/Item';
 
+type DoubleRangeProps = {
+  min_range: number,
+  max_range: number,
+  min: number,
+  max: number,
+
+};
+type DateProps = {
+  projects: {
+    id:number,
+    project_title?:string,
+    rooms:number,
+    studio?:boolean,
+    price:string,
+    old_price: string,
+    square:string,
+    release_dates: string,
+    floor: string,
+    image: string,
+  },
+  rooms:{
+    number: number
+    is_active: boolean,
+    disabled: boolean
+  },
+  price:{
+    min_range: number,
+    max_range: number,
+    min: number,
+    max: number,
+  }
+};
+
 const HomePage: NextPage = () => {
-  const [dataFilter, setDataFilter] = useState({});
+  const [dataFilter, setDataFilter] = useState({
+    projects: [],
+    rooms: [],
+    price: {
+      min_range: NaN,
+      max_range: NaN,
+      min: NaN,
+      max: NaN,
+    },
+  });
   const [page, setPage] = useState(1);
   const [count, setCount] = useState<number>();
   const [totalElem, setTotalElem] = useState<number>();
@@ -24,7 +69,7 @@ const HomePage: NextPage = () => {
       projects, rooms, price, square,
     } = dataFilters;
     setDataFilter({
-      projects, price, square, rooms,
+      projects, rooms, price, square,
     });
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const { per_page, total } = meta;
@@ -42,15 +87,21 @@ const HomePage: NextPage = () => {
 
   useEffect(() => {
     fetchData();
+    console.log('ff');
   }, [fetching]);
   return (
 
-    <div className="container min-h-[1920px]  px-1 pt-10 pb-8 mx-auto">
+    <div className="container min-h-[1920px]  px-1 pt-8 pb-8 mx-auto">
       <h4 className="">
         ПЛАНИРОВКИ
       </h4>
-      <Select />
-      <div className="basis-1/3 h-screen gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
+      <Layout>
+        <Select projects={dataFilter.projects} />
+        <Checkbox rooms={dataFilter.rooms} />
+        <DoubleRangeInput price={dataFilter.price} />
+      </Layout>
+
+      <div className="pt-12 basis-1/3 h-screen gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
         {date.map((el) => (
           <Item item={el} key={el.id} />
         ))}

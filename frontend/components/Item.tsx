@@ -22,7 +22,7 @@ type ItemProps = {
 
 const Item = ({ item }:ItemProps) => (
 
-  <div className="delay-100  pt-3 pb-12 px-10 w-[580px] rounded-base border ">
+  <div className=" pt-3 pb-12 px-10 w-[580px] rounded-base border ">
     <div className="flex justify-between items-center">
       <div className="text-text">
         <p className="pt-4 text-xl">
@@ -47,11 +47,11 @@ const Item = ({ item }:ItemProps) => (
       <Image src={apartment} width={165} height={287} alt="" />
     </div>
     <div className="pt-14 pb-1 flex justify-between items-center border-b-2">
-      <p>Проект</p>
+      <p className="text-grey">Проект</p>
       <p>ЖК Мотивы</p>
     </div>
     <div className="pt-1 pb-1 flex justify-between items-center border-b-2">
-      <p>Этаж</p>
+      <p className="text-grey">Этаж</p>
       <p>
         {item.floor}
         {' '}
@@ -59,7 +59,7 @@ const Item = ({ item }:ItemProps) => (
       </p>
     </div>
     <div className="pt-2 flex justify-between items-center ">
-      <p>Срок сдачи</p>
+      <p className="text-grey">Срок сдачи</p>
       <p>{(convertedDate(item.release_dates))}</p>
     </div>
   </div>

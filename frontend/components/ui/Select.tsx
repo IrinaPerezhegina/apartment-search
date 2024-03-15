@@ -1,105 +1,43 @@
-import { memo, useMemo } from 'react';
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import { memo } from 'react';
+import Image from 'next/image';
+import like from '../../public/arrow.png';
 
-const Select = () => {
-//   const onSelect = (e:MouseEvent) => {
-//     props.onChange(e.target.value);
-//   };
-  const options = {
-    // Варианты сортировок
-    sort: useMemo(
-      () => [
-        { value: 'order', title: 'По порядку' },
-        { value: 'title.ru', title: 'По именованию' },
-        { value: '-price', title: 'Сначала дорогие' },
-        { value: 'edition', title: 'Древние' },
-      ],
-      [],
-    ),
-  };
-  return (
-    <select className="Select" value="value">
-      {options.sort.map((item) => (
-        <option key={item.value} value={item.value}>
-          {item.title}
-        </option>
-      ))}
-    </select>
-  );
+type SelectProps = {
+  id: number
+  title: string,
+  is_active: boolean,
+  disabled: boolean
+
 };
-export default memo(Select);
 
-// {
-//     "data": {
-//         "projects": [
-//             {
-//                 "id": 1,
-//                 "title": "Christine Lehner",
-//                 "is_active": false,
-//                 "disabled": false
-//             },
-//             {
-//                 "id": 2,
-//                 "title": "Dr. Marion Wuckert V",
-//                 "is_active": false,
-//                 "disabled": true
-//             },
-//             {
-//                 "id": 3,
-//                 "title": "Nella Jaskolski",
-//                 "is_active": false,
-//                 "disabled": true
-//             },
-//             {
-//                 "id": 4,
-//                 "title": "Prof. Kyle Williamson",
-//                 "is_active": false,
-//                 "disabled": true
-//             },
-//             {
-//                 "id": 5,
-//                 "title": "Leonor Zboncak",
-//                 "is_active": false,
-//                 "disabled": true
-//             }
-//         ],
-//         "rooms": [
-//             {
-//                 "number": 0,
-//                 "is_active": false,
-//                 "disabled": false
-//             },
-//             {
-//                 "number": 1,
-//                 "is_active": false,
-//                 "disabled": false
-//             },
-//             {
-//                 "number": 3,
-//                 "is_active": false,
-//                 "disabled": false
-//             },
-//             {
-//                 "number": 2,
-//                 "is_active": false,
-//                 "disabled": false
-//             },
-//             {
-//                 "number": 4,
-//                 "is_active": false,
-//                 "disabled": false
-//             }
-//         ],
-//         "price": {
-//             "min_range": 2027947,
-//             "max_range": 14994017,
-//             "min": 2027947,
-//             "max": 14994017
-//         },
-//         "square": {
-//             "min_range": 20,
-//             "max_range": 100,
-//             "min": 20,
-//             "max": 100
-//         }
-//     }
-// }
+const Select = ({ projects }:{ projects:SelectProps[] }) => (
+  <div className="relative flex flex-col gap-2 w-[430px] h-[90px]">
+
+    <label htmlFor="projects" className="text-md text-grey font-ev">
+      Проект
+    </label>
+    <div className="relative cursor-pointer">
+      <Image className="animate-flyArrow  absolute right-6 top-5" src={like} width={15} height={15} alt="" />
+      <select
+        className="border-solid cursor-pointer  border-black-100 relative  rounded-base w-[430px] h-[55px] border text-lg font-ev appearance-none px-5"
+        id="projects"
+        name="projects"
+        value="projects"
+      >
+
+        <option value="Все">
+          Все
+        </option>
+        {projects
+                    && projects.map((project) => (
+                      <option value={project.title} key={project.id}>
+                        {project.title}
+                      </option>
+                    ))}
+
+      </select>
+    </div>
+  </div>
+);
+export default memo(Select);
