@@ -6,51 +6,24 @@ import Spinner from '@/components/Spinner';
 import Select from '@/components/ui/Select';
 import Layout from '@/components/Layout';
 import Checkbox from '@/components/ui/Checkbox';
-import DoubleRangeInput from '@/components/ui/DoubleRangeInput';
+import DoubleRangeInput from '@/components/ui/DoubleScrollBar';
 import Item from '../components/Item';
-
-type DoubleRangeProps = {
-  min_range: number,
-  max_range: number,
-  min: number,
-  max: number,
-
-};
-type DateProps = {
-  projects: {
-    id:number,
-    project_title?:string,
-    rooms:number,
-    studio?:boolean,
-    price:string,
-    old_price: string,
-    square:string,
-    release_dates: string,
-    floor: string,
-    image: string,
-  },
-  rooms:{
-    number: number
-    is_active: boolean,
-    disabled: boolean
-  },
-  price:{
-    min_range: number,
-    max_range: number,
-    min: number,
-    max: number,
-  }
-};
 
 const HomePage: NextPage = () => {
   const [dataFilter, setDataFilter] = useState({
     projects: [],
     rooms: [],
     price: {
-      min_range: NaN,
-      max_range: NaN,
-      min: NaN,
-      max: NaN,
+      min_range: 0,
+      max_range: 0,
+      min: 0,
+      max: 0,
+    },
+    square: {
+      min_range: 0,
+      max_range: 0,
+      min: 0,
+      max: 0,
     },
   });
   const [page, setPage] = useState(1);
@@ -95,10 +68,22 @@ const HomePage: NextPage = () => {
       <h4 className="">
         ПЛАНИРОВКИ
       </h4>
-      <Layout>
+      <Layout total={totalElem}>
         <Select projects={dataFilter.projects} />
         <Checkbox rooms={dataFilter.rooms} />
-        <DoubleRangeInput price={dataFilter.price} />
+        <DoubleRangeInput
+          unit={false}
+          label="Стоимость"
+          price={dataFilter.price}
+          onChange={({ min, max }: { min: number; max: number }) => console.log(dataFilter)}
+        />
+        {' '}
+        <DoubleRangeInput
+          unit
+          label="Задайте площадь, м²"
+          price={dataFilter.square}
+          onChange={({ min, max }: { min: number; max: number }) => console.log(dataFilter)}
+        />
       </Layout>
 
       <div className="pt-12 basis-1/3 h-screen gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
