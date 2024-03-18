@@ -4,6 +4,7 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import classnames from 'classnames';
 import { convertedNumber } from '@/helper/convertedNumber';
+import { title } from 'process';
 
  type DoubleScrollProps = {
    min_range: number,
@@ -14,14 +15,27 @@ import { convertedNumber } from '@/helper/convertedNumber';
  };
 
 const DoubleScrollBar = ({
-  price, onChange, label = 'Данные', unit = true,
-}:{ onChange:Function, price:DoubleScrollProps, label:string, unit:boolean }) => {
+  price, onChange, label = 'Данные', unit = true, param,
+}:{ onChange:Function, price:DoubleScrollProps, param:string, label:string, unit:boolean }) => {
   const { min, max } = price;
   const [minVal, setMinVal] = useState(min);
   const [maxVal, setMaxVal] = useState(max);
   const minValRef = useRef<HTMLInputElement>(null);
   const maxValRef = useRef<HTMLInputElement>(null);
   const range = useRef<HTMLDivElement>(null);
+  // const handleChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
+  //   const value = Math.min(+target.value, minVal + 1);
+  //   setMinVal(value);
+  //   target.value = value.toString();
+  //   onChange({ name: target.name, value: target.value });
+  // };
+
+  // onChange={(event: ChangeEvent<HTMLInputElement>) => {
+  //   const value = Math.max(+event.target.value, minVal + 1);
+  //   setMaxVal(value);
+  //   // eslint-disable-next-line no-param-reassign
+  //   event.target.value = value.toString();
+  // }}
 
   const getPercent = useCallback(
     (value: number) => Math.round(((value - min) / (max - min)) * 100),
@@ -55,9 +69,9 @@ const DoubleScrollBar = ({
     }
   }, [maxVal, getPercent]);
 
-  useEffect(() => {
-    onChange({ min: minVal, max: maxVal });
-  }, [minVal, maxVal, onChange]);
+  // useEffect(() => {
+  //   onChange({ min: minVal, max: maxVal });
+  // }, [minVal, maxVal, onChange]);
   return (
     <div className="flex flex-col">
       <p className="text-md text-grey font-ev">{label}</p>
@@ -86,22 +100,29 @@ const DoubleScrollBar = ({
       </div>
       <div className="mx-auto">
         <input
+          title={param}
+          name="min"
           type="range"
           min={min}
           max={max}
           value={minVal}
           ref={minValRef}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          onChange={(event : ChangeEvent<HTMLInputElement>) => {
             const value = Math.min(+event.target.value, maxVal - 1);
             setMinVal(value);
             // eslint-disable-next-line no-param-reassign
             event.target.value = value.toString();
+            onChange(
+              { title: event.target.title, name: event.target.name, value: event.target.value },
+            );
           }}
           className={classnames('thumb thumb--zindex-3', {
             'thumb--zindex-5': minVal > max - 100,
           })}
         />
         <input
+          title={param}
+          name="max"
           type="range"
           min={min}
           max={max}
@@ -112,6 +133,11 @@ const DoubleScrollBar = ({
             setMaxVal(value);
             // eslint-disable-next-line no-param-reassign
             event.target.value = value.toString();
+            onChange({
+              title: event.target.title,
+              name: event.target.name,
+              value: event.target.value,
+            });
           }}
           className="thumb thumb--zindex-4"
         />

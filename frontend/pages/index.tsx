@@ -30,12 +30,15 @@ const HomePage: NextPage = () => {
   const [count, setCount] = useState<number>();
   const [totalElem, setTotalElem] = useState<number>();
   const [date, setDate] = useState([]);
+  const [queryParams, setQueryParams] = useState({
+    projects: 'Christine Lehner', rooms: '', price: { min: '', max: '' }, square: { min: '', max: '' },
+  });
   const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(true);
+  const [fetching, setFetching] = useState(false);
   const fetchData = async () => {
     setLoading(true);
     const resFlats = await fetch(`http://localhost:8083/api/v1/flats?page=${page}`);
-    const resFilters = await fetch('http://localhost:8083/api/v1/filters');
+    const resFilters = await fetch('http://localhost:8083/api/v1/filters?');
     const { data, meta } = await resFlats.json();
     const { data: dataFilters } = await resFilters.json();
     const {
@@ -57,10 +60,26 @@ const HomePage: NextPage = () => {
     setPage((prev) => prev + 1);
     setFetching((prev) => !prev);
   };
+  const handleChange = (target : HTMLSelectElement | HTMLInputElement) => {
+    if (target?.title === 'price') {
+      setQueryParams((prevState) => ({
+        ...prevState,
+        price: { ...prevState.price, [target.name]: target.value },
+      }));
+    } if (target?.title === 'square') {
+      setQueryParams((prevState) => ({
+        ...prevState,
+        square: { ...prevState.square, [target.name]: target.value },
+      }));
+    }
+    setQueryParams((prevState) => ({
+      ...prevState,
+      [target.name]: target.value,
+    }));
+  };
 
   useEffect(() => {
     fetchData();
-    console.log('ff');
   }, [fetching]);
   return (
 
@@ -69,21 +88,30 @@ const HomePage: NextPage = () => {
         ПЛАНИРОВКИ
       </h4>
       <Layout total={totalElem}>
-        <Select projects={dataFilter.projects} />
-        <Checkbox rooms={dataFilter.rooms} />
+        <Select projects={dataFilter.projects} onChange={handleChange} name="projects" value={queryParams.projects} />
+        <Checkbox value={queryParams.rooms} rooms={dataFilter.rooms} onChange={handleChange} name="rooms" />
         <DoubleRangeInput
+          param="price"
           unit={false}
           label="Стоимость"
           price={dataFilter.price}
-          onChange={({ min, max }: { min: number; max: number }) => console.log(dataFilter)}
+          onChange={handleChange}
         />
-        {' '}
         <DoubleRangeInput
+          param="square"
           unit
           label="Задайте площадь, м²"
           price={dataFilter.square}
-          onChange={({ min, max }: { min: number; max: number }) => console.log(dataFilter)}
+          onChange={handleChange}
         />
+        <DoubleRangeInput
+          param="mm"
+          unit={false}
+          label="s"
+          price={dataFilter.price}
+          onChange={({ min, max }: { min: number; max: number }) => console.log(fetching)}
+        />
+
       </Layout>
 
       <div className="pt-12 basis-1/3 h-screen gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
