@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { ChangeEvent, memo } from 'react';
 import Image from 'next/image';
+import { nanoid } from 'nanoid';
 import arrow from '../../public/arrow.png';
 
 type SelectProps = {
@@ -36,12 +37,11 @@ const Select = ({
           <option value="Все">
             Все
           </option>
-          {projects
-                    && projects.map((project) => (
-                      <option value={project.title} key={project.id}>
-                        {project.title}
-                      </option>
-                    ))}
+          {projects.map((project) => (
+            <option value={project.title} key={nanoid()}>
+              {project.title}
+            </option>
+          ))}
 
         </select>
       </div>

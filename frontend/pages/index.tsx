@@ -7,8 +7,30 @@ import Select from '@/components/ui/Select';
 import Layout from '@/components/Layout';
 import Checkbox from '@/components/ui/Checkbox';
 import DoubleRangeInput from '@/components/ui/DoubleScrollBar';
+import exclude from '@/helper';
+import { log } from 'console';
 import Item from '../components/Item';
 
+type validParamsProps = {
+  'f[projects][]':number,
+  'f[square][min]':number,
+  'f[square][max]':number,
+  'f[rooms][]':number,
+  'f[price][min]':number,
+  'f[price][max]':number,
+  page:number,
+
+};
+type queryParamsProps = {
+  'f[projects][]':number | '',
+  'f[square][min]':number,
+  'f[square][max]':number,
+  'f[rooms][]':number,
+  'f[price][min]':number,
+  'f[price][max]':number,
+  page:number,
+
+};
 const HomePage: NextPage = () => {
   const [dataFilter, setDataFilter] = useState({
     projects: [],
@@ -30,14 +52,37 @@ const HomePage: NextPage = () => {
   const [count, setCount] = useState<number>();
   const [totalElem, setTotalElem] = useState<number>();
   const [date, setDate] = useState([]);
+  const [queryParamsr, setQueryParamsr] = useState({ } as queryParamsProps);
   const [queryParams, setQueryParams] = useState({
-    projects: 'Christine Lehner', rooms: '', price: { min: '', max: '' }, square: { min: '', max: '' },
+    projects: { }, rooms: 0, price: { min: 0, max: 0 }, square: { min: 0, max: 0 },
   });
+
   const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(false);
-  const fetchData = async () => {
-    setLoading(true);
-    const resFlats = await fetch(`http://localhost:8083/api/v1/flats?page=${page}`);
+  // const [fetching, setFetching] = useState(false);
+  const fetchData = async (newParams = {}, replaceHistory = false) => {
+    const params = { ...queryParamsr, ...newParams };
+    setQueryParamsr(params);
+
+    // Сохранить параметры в адрес страницы
+    const urlSearch = new URLSearchParams(exclude(params, queryParamsr)).toString();
+    const url = window.location.pathname + (urlSearch ? `?${urlSearch}` : '') + window.location.hash;
+    if (replaceHistory) {
+      window.history.replaceState({}, '', url);
+    } else {
+      window.history.pushState({}, '', url);
+    }
+
+    const apiParams = exclude({
+      'f[projects][]': queryParamsr['f[projects][]'],
+      page: queryParamsr.page,
+
+    }, {
+      'f[projects][]': queryParamsr['f[projects][]'],
+      page: queryParamsr.page,
+
+    });
+
+    const resFlats = await fetch(`http://localhost:8083/api/v1/flats?${new URLSearchParams(apiParams)}`);
     const resFilters = await fetch('http://localhost:8083/api/v1/filters?');
     const { data, meta } = await resFlats.json();
     const { data: dataFilters } = await resFilters.json();
@@ -51,36 +96,55 @@ const HomePage: NextPage = () => {
     const { per_page, total } = meta;
     setCount(per_page);
     setTotalElem(total);
-    setDate([...date, ...data]);
+    if (!total) {
+      setDate([...date, ...data]);
+    }
+    setDate(data);
     setLoading(false);
   };
 
   const handleClick = (event: MouseEvent) => {
     event.preventDefault();
-    setPage((prev) => prev + 1);
-    setFetching((prev) => !prev);
+    // fetchData({ 'f[projects][]': 5 });
+    // setPage((prev) => prev + 1);
+    // setFetching((prev) => !prev);
   };
   const handleChange = (target : HTMLSelectElement | HTMLInputElement) => {
-    if (target?.title === 'price') {
-      setQueryParams((prevState) => ({
-        ...prevState,
-        price: { ...prevState.price, [target.name]: target.value },
-      }));
-    } if (target?.title === 'square') {
-      setQueryParams((prevState) => ({
-        ...prevState,
-        square: { ...prevState.square, [target.name]: target.value },
-      }));
-    }
+    // if (target?.title === 'price') {
+    //   setQueryParams((prevState) => ({
+    //     ...prevState,
+    //     price: { ...prevState.price, [target.name]: target.value },
+    //   }));
+    // } if (target?.title === 'square') {
+    //   setQueryParams((prevState) => ({
+    //     ...prevState,
+    //     square: { ...prevState.square, [target.name]: target.value },
+    //   }));
+    // }
+
     setQueryParams((prevState) => ({
       ...prevState,
-      [target.name]: target.value,
+      projects: {
+        value: target.value,
+        id: (dataFilter.projects.find((elem) => elem.title === target.value)).id,
+      },
     }));
+    setQueryParamsr((prevState) => ({
+      ...prevState,
+      'f[projects][]': (dataFilter.projects.find((elem) => elem.title === target.value)).id,
+    }));
+
+    // setQueryParamsr('f[projects][]': (dataFilter.projects.find((elem) => elem.title === target.value)).id)
+    fetchData({ 'f[projects][]': (dataFilter.projects.find((elem) => elem.title === target.value)).id });
+    // fetchData();
+    // fetchData({ 'f[projects][]': (dataFilter.projects.find((elem) => elem.title === target.value)).id });
+    // fetchData({ 'f[projects][]': (dataFilter.projects.find((elem) => elem.title === target.value)).id });
+    // fetchData({ page: 10, 'f[projects][]': (dataFilter.projects.find((elem) => elem.title === target.value)).id });
   };
 
   useEffect(() => {
     fetchData();
-  }, [fetching]);
+  }, []);
   return (
 
     <div className="container min-h-[1920px]  px-1 pt-8 pb-8 mx-auto">
@@ -88,8 +152,8 @@ const HomePage: NextPage = () => {
         ПЛАНИРОВКИ
       </h4>
       <Layout total={totalElem}>
-        <Select projects={dataFilter.projects} onChange={handleChange} name="projects" value={queryParams.projects} />
-        <Checkbox value={queryParams.rooms} rooms={dataFilter.rooms} onChange={handleChange} name="rooms" />
+        <Select projects={dataFilter.projects} onChange={handleChange} name="projects" value={queryParams.projects.value} />
+        {/* <Checkbox value={queryParams.rooms} rooms={dataFilter.rooms} onChange={handleChange} name="rooms" />
         <DoubleRangeInput
           param="price"
           unit={false}
@@ -103,13 +167,13 @@ const HomePage: NextPage = () => {
           label="Задайте площадь, м²"
           price={dataFilter.square}
           onChange={handleChange}
-        />
+        /> */}
         <DoubleRangeInput
           param="mm"
           unit={false}
           label="s"
           price={dataFilter.price}
-          onChange={({ min, max }: { min: number; max: number }) => console.log(fetching)}
+          onChange={({ min, max }: { min: number; max: number }) => console.log(queryParamsr)}
         />
 
       </Layout>
