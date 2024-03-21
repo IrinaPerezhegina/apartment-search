@@ -1,10 +1,9 @@
 import { ReactNode } from 'react';
 import Button from './ui/Button';
-// import Image from 'next/image';
-// import like from '../../public/';
 
 const Layout = ({ children, total }:{ children:ReactNode, total:number }) => (
   <div className="flex flex-col border-b w-full min-h-[272px] ">
+
     <div className="flex-wrap justify-center gap-5 flex pt-[53px] pb-10">
       {children}
 
@@ -20,6 +19,7 @@ const Layout = ({ children, total }:{ children:ReactNode, total:number }) => (
       </div>
       <div className="items-left"><Button /></div>
     </div>
+
   </div>
 );
 

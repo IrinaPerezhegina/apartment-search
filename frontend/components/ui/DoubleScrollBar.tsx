@@ -4,7 +4,6 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import classnames from 'classnames';
 import { convertedNumber } from '@/helper/convertedNumber';
-import { title } from 'process';
 
  type DoubleScrollProps = {
    min_range: number,
@@ -23,19 +22,6 @@ const DoubleScrollBar = ({
   const minValRef = useRef<HTMLInputElement>(null);
   const maxValRef = useRef<HTMLInputElement>(null);
   const range = useRef<HTMLDivElement>(null);
-  // const handleChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
-  //   const value = Math.min(+target.value, minVal + 1);
-  //   setMinVal(value);
-  //   target.value = value.toString();
-  //   onChange({ name: target.name, value: target.value });
-  // };
-
-  // onChange={(event: ChangeEvent<HTMLInputElement>) => {
-  //   const value = Math.max(+event.target.value, minVal + 1);
-  //   setMaxVal(value);
-  //   // eslint-disable-next-line no-param-reassign
-  //   event.target.value = value.toString();
-  // }}
 
   const getPercent = useCallback(
     (value: number) => Math.round(((value - min) / (max - min)) * 100),
