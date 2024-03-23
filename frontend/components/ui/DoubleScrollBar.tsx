@@ -4,6 +4,7 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import classnames from 'classnames';
 import { convertedNumber } from '@/helper/convertedNumber';
+import { debounce } from 'lodash';
 
  type DoubleScrollProps = {
    min_range: number,
@@ -55,9 +56,31 @@ const DoubleScrollBar = ({
     }
   }, [maxVal, getPercent]);
 
-  // useEffect(() => {
-  //   onChange({ min: minVal, max: maxVal });
-  // }, [minVal, maxVal, onChange]);
+  const onChangeDebounce = useCallback(
+    debounce((event : ChangeEvent<HTMLInputElement>) => onChange({
+      title: event.target.title,
+      name: event.target.name,
+      value: event.target.value,
+      id: event.target.id,
+    }), 600),
+    [],
+  );
+
+  const onChangeMaxInput = (
+    event: ChangeEvent<HTMLInputElement>,
+    value:number,
+  ) => {
+    setMaxVal(value);
+    onChangeDebounce(event);
+  };
+  const onChangeMinInput = (
+    event: ChangeEvent<HTMLInputElement>,
+    value:number,
+  ) => {
+    setMinVal(value);
+    onChangeDebounce(event);
+  };
+
   return (
     <div className="flex flex-col">
       <p className="text-md text-grey font-ev">{label}</p>
@@ -86,7 +109,7 @@ const DoubleScrollBar = ({
       </div>
       <div className="mx-auto">
         <input
-          title={param}
+          id={maxVal.toString()}
           name="min"
           type="range"
           min={min}
@@ -95,12 +118,9 @@ const DoubleScrollBar = ({
           ref={minValRef}
           onChange={(event : ChangeEvent<HTMLInputElement>) => {
             const value = Math.min(+event.target.value, maxVal - 1);
-            setMinVal(value);
             // eslint-disable-next-line no-param-reassign
             event.target.value = value.toString();
-            onChange(
-              { title: event.target.title, name: event.target.name, value: event.target.value },
-            );
+            onChangeMinInput(event, value);
           }}
           className={classnames('thumb thumb--zindex-3', {
             'thumb--zindex-5': minVal > max - 100,
@@ -116,14 +136,9 @@ const DoubleScrollBar = ({
           ref={maxValRef}
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
             const value = Math.max(+event.target.value, minVal + 1);
-            setMaxVal(value);
             // eslint-disable-next-line no-param-reassign
             event.target.value = value.toString();
-            onChange({
-              title: event.target.title,
-              name: event.target.name,
-              value: event.target.value,
-            });
+            onChangeMaxInput(event, value);
           }}
           className="thumb thumb--zindex-4"
         />

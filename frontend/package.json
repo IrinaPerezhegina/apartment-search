@@ -29,6 +29,7 @@
     "js-cookie": "^3.0.5",
     "lightgallery": "^2.7.2",
     "lodash": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
     "nanoid": "^5.0.6",
     "next": "13.5.4",
     "npm": "^10.4.0",
