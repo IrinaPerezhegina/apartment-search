@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-
 import { NextPage } from 'next';
 import React, {
   MouseEvent, useEffect, useState,
@@ -10,7 +9,6 @@ import Layout from '@/components/Layout';
 import Checkbox from '@/components/ui/Checkbox';
 import DoubleRangeInput from '@/components/ui/DoubleScrollBar';
 import exclude from '@/helper';
-import { useSearchParams } from 'next/navigation';
 import Item from '../components/Item';
 import {
   validParamsProps, queryParamsProps, valueParamsProps,
@@ -37,19 +35,18 @@ const HomePage: NextPage = () => {
   const [count, setCount] = useState<number>();
   const [totalElem, setTotalElem] = useState<number>();
   const [date, setDate] = useState([]);
-  const [queryParams, setQueryParams] = useState({ } as queryParamsProps);
+  const [queryParams, setQueryParams] = useState({} as queryParamsProps);
   const [valueParams, setValueParams] = useState<valueParamsProps>({
-    projects: { value: '', id: 1 }, rooms: NaN, price: { min: 0, max: 0 }, square: { min: 0, max: 0 },
+    projects: { value: '', id: 0 }, rooms: NaN, price: { min: 0, max: 0 }, square: { min: 0, max: 0 },
   });
 
   const [loading, setLoading] = useState(false);
 
   const fetchData = async (newParams = {}, replaceHistory = false) => {
     const params = { ...queryParams, ...newParams };
-    setQueryParams(params);
 
     // Сохранить параметры в адрес страницы
-    const urlSearch = new URLSearchParams(exclude({ ...params }, { })).toString();
+    const urlSearch = new URLSearchParams(exclude(params, { })).toString();
     const url = window.location.pathname + (urlSearch ? `?${urlSearch}` : '') + window.location.hash;
     if (replaceHistory) {
       window.history.replaceState({}, '', url);
@@ -57,11 +54,13 @@ const HomePage: NextPage = () => {
       window.history.pushState({}, '', url);
     }
 
-    const apiParams = exclude({ ...params }, { });
+    const apiParams = exclude(params, {});
 
     const resFlats = await fetch(`http://localhost:8083/api/v1/flats?${new URLSearchParams(apiParams)}`);
+
     const resFilters = await fetch('http://localhost:8083/api/v1/filters?');
-    const { data, meta } = await resFlats.json();
+    const { data, meta } = await resFlats.json().finally(() => console.log(params, newParams, valueParams));
+
     const { data: dataFilters } = await resFilters.json();
     const {
       projects, rooms, price, square,
@@ -83,36 +82,27 @@ const HomePage: NextPage = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const validParams = {} as validParamsProps;
     if (urlParams.has('f[projects][]') && urlParams.get('f[projects][]') !== '') validParams['f[projects][]'] = Number(urlParams.get('f[projects][]'));
-    if (urlParams.has('f[price][min]')) validParams['f[price][min]'] = Number(urlParams.get('f[square][min]'));
-    if (urlParams.has('f[price][max]')) validParams['f[price][max]'] = Number(urlParams.get('f[square][max]'));
+    if (urlParams.has('f[price][min]')) validParams['f[price][min]'] = Number(urlParams.get('f[price][min]'));
+    if (urlParams.has('f[price][max]')) validParams['f[price][max]'] = Number(urlParams.get('f[price][max]'));
     if (urlParams.has('f[rooms][]')) validParams['f[rooms][]'] = Number(urlParams.get('f[rooms][]'));
-    if (urlParams.has('f[square][min]')) validParams['f[price][min]'] = Number(urlParams.get('f[price][min]'));
-    if (urlParams.has('f[square][max]')) validParams['f[price][max]'] = Number(urlParams.get('f[price][max]'));
+    if (urlParams.has('f[square][min]')) validParams['f[square][min]'] = Number(urlParams.get('f[square][min]'));
+    if (urlParams.has('f[square][max]')) validParams['f[square][max]'] = Number(urlParams.get('f[square][max]'));
     if (urlParams.has('page')) validParams.page = Number(urlParams.get('page')) || 1;
     setQueryParams(validParams);
-    if (validParams['f[projects][]']) {
-      setValueParams(
-        (prevState) => ({
-          ...prevState,
-          rooms: validParams['f[rooms][]'],
-          projects: {
-            value: localStorage.getItem('title'),
-            id: validParams['f[projects][]'],
-          },
-
-        }),
-      );
-    }
-
+    setValueParams(
+      (prevState) => ({
+        ...prevState,
+        square: { min: validParams['f[square][min]'], max: validParams['f[square][max]'] },
+        price: { min: validParams['f[price][min]'], max: validParams['f[price][max]'] },
+        rooms: validParams['f[rooms][]'],
+        projects: {
+          value: localStorage.getItem('title'),
+          id: validParams['f[projects][]'],
+        },
+      }),
+    );
     await fetchData({ ...queryParams, ...validParams, ...newParams }, true);
   };
-  // const handleChangeCheck = (target : HTMLSelectElement | HTMLInputElement) => {
-  //   setPage(1111);
-  //   // setValueParams((prevState) => ({
-  //   //   ...prevState,
-  //   //   [target.name]: target.value,
-  //   // }));
-  // };
 
   const handleClick = (event: MouseEvent) => {
     event.preventDefault();
@@ -159,37 +149,74 @@ const HomePage: NextPage = () => {
         'f[rooms][]': Number(target.value),
       }));
       fetchData({ 'f[rooms][]': Number(target.value) });
-    } else if (target.name === 'min') {
-      setValueParams((prevState) => ({
-        ...prevState,
-        price: { min: Number(target.value), max: Number(target.id) },
-      }));
-      setQueryParams((prevState) => ({
-        ...prevState,
-        'f[price][min]': Number(target.value),
-        'f[price][max]': Number(target.id),
-      }));
-      fetchData({ 'f[price][min]': Number(target.value), 'f[price][max]': Number(target.id) });
+    } else if (target.name === 'price') {
+      if (target.title === 'min') {
+        setValueParams((prevState) => ({
+          ...prevState,
+          price: { min: Number(target.value), max: Number(target.id) },
+        }));
+        setQueryParams((prevState) => ({
+          ...prevState,
+          'f[price][min]': Number(target.value),
+          'f[price][max]': Number(target.id),
+        }));
+        fetchData({
+          'f[price][min]': Number(target.value),
+          'f[price][max]': Number(target.id),
+        });
+      } else {
+        setValueParams((prevState) => ({
+          ...prevState,
+          price: { max: Number(target.value), min: Number(target.id) },
+        }));
+        setQueryParams((prevState) => ({
+          ...prevState,
+          'f[price][min]': Number(target.id),
+          'f[price][max]': Number(target.value),
+        }));
+        fetchData({
+          'f[price][min]': Number(target.id),
+          'f[price][max]': Number(target.value),
+        });
+      }
+    } else if (target.name === 'square') {
+      if (target.title === 'min') {
+        setValueParams((prevState) => ({
+          ...prevState,
+          square: { min: Number(target.value), max: Number(target.id) },
+        }));
+        setQueryParams((prevState) => ({
+          ...prevState,
+          'f[square][min]': Number(target.value),
+          'f[square][max]': Number(target.id),
+        }));
+        fetchData({
+          'f[square][min]': Number(target.value),
+          'f[square][max]': Number(target.id),
+        });
+      } else {
+        setValueParams((prevState) => ({
+          ...prevState,
+          square: { max: Number(target.value), min: Number(target.id) },
+        }));
+        setQueryParams((prevState) => ({
+          ...prevState,
+          'f[square][min]': Number(target.id),
+          'f[square][max]': Number(target.value),
+        }));
+        fetchData({
+          'f[square][min]': Number(target.id),
+          'f[square][max]': Number(target.value),
+        });
+      }
     }
   };
-    // if (target?.title === 'price') {
-    //   setQueryParams((prevState) => ({
-    //     ...prevState,
-    //     price: { ...prevState.price, [target.name]: target.value },
-    //   }));
-    // } if (target?.title === 'square') {
-    //   setQueryParams((prevState) => ({
-    //     ...prevState,
-    //     square: { ...prevState.square, [target.name]: target.value },
-    //   }));
-    // }
 
   useEffect(() => {
     initParams();
   }, []);
 
   return (
-
     <div className="container min-h-[1920px]  px-1 pt-8 pb-8 mx-auto">
       <h4 className="">
         ПЛАНИРОВКИ
@@ -198,27 +225,21 @@ const HomePage: NextPage = () => {
         <Select projects={dataFilter.projects} onChange={handleChange} name="projects" value={valueParams.projects.value} />
         <Checkbox rooms={dataFilter.rooms} onChange={handleChange} name="rooms" value={valueParams.rooms} />
         <DoubleRangeInput
-          param="price"
+          name="price"
           unit={false}
+          initialValue={valueParams.price}
           label="Стоимость"
-          price={dataFilter.price}
+          inputData={dataFilter.price}
           onChange={handleChange}
         />
-        {/* <DoubleRangeInput
-          param="square"
-          unit
-          label="Задайте площадь, м²"
-          price={dataFilter.square}
-          onChange={handleChange}
-        />   */}
         <DoubleRangeInput
-          param="mm"
-          unit={false}
-          label="s"
-          price={dataFilter.price}
-          onChange={(target : HTMLSelectElement | HTMLInputElement) => console.log(target, valueParams)}
+          unit
+          name="square"
+          label="Задайте площадь, м²"
+          initialValue={valueParams.square}
+          inputData={dataFilter.square}
+          onChange={handleChange}
         />
-
       </Layout>
 
       <div className="pt-12 basis-1/3 h-screen gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">

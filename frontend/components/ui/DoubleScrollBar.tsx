@@ -15,9 +15,12 @@ import { debounce } from 'lodash';
  };
 
 const DoubleScrollBar = ({
-  price, onChange, label = 'Данные', unit = true, param,
-}:{ onChange:Function, price:DoubleScrollProps, param:string, label:string, unit:boolean }) => {
-  const { min, max } = price;
+  initialValue, inputData, onChange, label = 'Данные', unit = true, name,
+}:{
+  onChange:Function, initialValue:{ min:number, max:number },
+  inputData:DoubleScrollProps, label:string, unit:boolean, name:string
+}) => {
+  const { min, max } = inputData;
   const [minVal, setMinVal] = useState(min);
   const [maxVal, setMaxVal] = useState(max);
   const minValRef = useRef<HTMLInputElement>(null);
@@ -29,10 +32,14 @@ const DoubleScrollBar = ({
     [min, max],
   );
   useEffect(() => {
-    setMaxVal(max);
-    setMinVal(min);
-  }, [max, min]);
+    setMaxVal(initialValue.max || max);
+    setMinVal(initialValue.min || min);
+  }, [initialValue, min, max]);
 
+  // useEffect(() => {
+  //   setMaxVal(max);
+  //   setMinVal(min);
+  // }, [min, max]);
   useEffect(() => {
     if (maxValRef.current) {
       const minPercent = getPercent(minVal);
@@ -62,8 +69,8 @@ const DoubleScrollBar = ({
       name: event.target.name,
       value: event.target.value,
       id: event.target.id,
-    }), 600),
-    [],
+    }), 800),
+    [name, onChange],
   );
 
   const onChangeMaxInput = (
@@ -90,27 +97,24 @@ const DoubleScrollBar = ({
           {' '}
           {!unit ? convertedNumber(minVal.toString()) : minVal }
           {' '}
-
         </p>
         <p className="text-lg font-ev">
           {' '}
           —
           {' '}
         </p>
-
         <p className="text-lg font-ev">
           до
           {' '}
           {!unit ? convertedNumber(maxVal.toString()) : maxVal}
           {' '}
-
         </p>
-
       </div>
       <div className="mx-auto">
         <input
           id={maxVal.toString()}
-          name="min"
+          name={name}
+          title="min"
           type="range"
           min={min}
           max={max}
@@ -127,8 +131,9 @@ const DoubleScrollBar = ({
           })}
         />
         <input
-          title={param}
-          name="max"
+          id={minVal.toString()}
+          title="max"
+          name={name}
           type="range"
           min={min}
           max={max}
@@ -142,7 +147,6 @@ const DoubleScrollBar = ({
           }}
           className="thumb thumb--zindex-4"
         />
-
         <div className="slider">
           <div className="slider__track" />
           <div ref={range} className="slider__range" />

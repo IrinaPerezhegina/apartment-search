@@ -11,11 +11,11 @@ export type validParamsProps = {
 };
 export type queryParamsProps = {
   'f[projects][]':number | '',
-  'f[square][min]':number,
-  'f[square][max]':number,
   'f[rooms][]':number,
   'f[price][min]':number,
   'f[price][max]':number,
+  'f[square][min]':number,
+  'f[square][max]':number,
   page:number,
 };
 
