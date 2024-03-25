@@ -20,7 +20,7 @@ const DoubleScrollBar = ({
   onChange:Function, initialValue:{ min:number, max:number },
   inputData:DoubleScrollProps, label:string, unit:boolean, name:string
 }) => {
-  const { min, max } = inputData;
+  const { min_range: min, max_range: max } = inputData;
   const [minVal, setMinVal] = useState(min);
   const [maxVal, setMaxVal] = useState(max);
   const minValRef = useRef<HTMLInputElement>(null);
@@ -36,10 +36,6 @@ const DoubleScrollBar = ({
     setMinVal(initialValue.min || min);
   }, [initialValue, min, max]);
 
-  // useEffect(() => {
-  //   setMaxVal(max);
-  //   setMinVal(min);
-  // }, [min, max]);
   useEffect(() => {
     if (maxValRef.current) {
       const minPercent = getPercent(minVal);

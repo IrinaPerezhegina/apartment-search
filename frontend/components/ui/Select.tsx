@@ -38,21 +38,16 @@ const Select = ({
           value={value}
           onChange={handleChange}
         >
-
           <option value="все">
             Все
           </option>
-
           {projects.map((project) => (
             <option value={project.title} key={nanoid()}>
               {project.title}
             </option>
           ))}
-
         </select>
-
       </div>
-
     </div>
 
   );

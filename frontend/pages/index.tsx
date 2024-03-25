@@ -37,7 +37,7 @@ const HomePage: NextPage = () => {
   const [date, setDate] = useState([]);
   const [queryParams, setQueryParams] = useState({} as queryParamsProps);
   const [valueParams, setValueParams] = useState<valueParamsProps>({
-    projects: { value: '', id: 0 }, rooms: NaN, price: { min: 0, max: 0 }, square: { min: 0, max: 0 },
+    projects: { value: 'все', id: 1 }, rooms: NaN, price: { min: 0, max: 0 }, square: { min: 0, max: 0 },
   });
 
   const [loading, setLoading] = useState(false);
@@ -58,7 +58,7 @@ const HomePage: NextPage = () => {
 
     const resFlats = await fetch(`http://localhost:8083/api/v1/flats?${new URLSearchParams(apiParams)}`);
 
-    const resFilters = await fetch('http://localhost:8083/api/v1/filters?');
+    const resFilters = await fetch(`http://localhost:8083/api/v1/filters?${new URLSearchParams(apiParams)}`);
     const { data, meta } = await resFlats.json().finally(() => console.log(params, newParams, valueParams));
 
     const { data: dataFilters } = await resFilters.json();
@@ -102,6 +102,22 @@ const HomePage: NextPage = () => {
       }),
     );
     await fetchData({ ...queryParams, ...validParams, ...newParams }, true);
+  };
+
+  const resetParams = async () => {
+    // Удаление параметров изначальных, из URL и из переданных явно
+    delete queryParams['f[projects][]'];
+    delete queryParams['f[price][min]'];
+    delete queryParams['f[price][max]'];
+    delete queryParams['f[square][max]'];
+    delete queryParams['f[square][min]'];
+    delete queryParams['f[rooms][]'];
+    localStorage.setItem('title', 'Все');
+    setValueParams({
+      projects: { value: 'все', id: 1 }, rooms: NaN, price: { min: 0, max: 0 }, square: { min: 0, max: 0 },
+    });
+    // Установка параметров и загрузка данных
+    fetchData({ page: 1 });
   };
 
   const handleClick = (event: MouseEvent) => {
@@ -217,11 +233,11 @@ const HomePage: NextPage = () => {
   }, []);
 
   return (
-    <div className="container min-h-[1920px]  px-1 pt-8 pb-8 mx-auto">
-      <h4 className="">
+    <div className="container min-h-[1920px] max-sm:pt-4 max-sm:pb-20 max-sm:px-5 px-1 pt-8 pb-8 mx-auto">
+      <h4 className="max-sm:text-2xl max-sm:font-semibold">
         ПЛАНИРОВКИ
       </h4>
-      <Layout total={totalElem}>
+      <Layout total={totalElem} resetParams={resetParams}>
         <Select projects={dataFilter.projects} onChange={handleChange} name="projects" value={valueParams.projects.value} />
         <Checkbox rooms={dataFilter.rooms} onChange={handleChange} name="rooms" value={valueParams.rooms} />
         <DoubleRangeInput
@@ -242,13 +258,13 @@ const HomePage: NextPage = () => {
         />
       </Layout>
 
-      <div className="pt-12 basis-1/3 h-screen gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
+      <div className="pt-12  max-sm:pt-2 basis-1/3 h-screen max-sm:gap-2 gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
         {date.map((el) => (
           <Item item={el} key={el.id} />
         ))}
-        <div className="cursor-pointer mb-5 flex w-[580px] gap-4 h-[58px]  text-white text-xl bg-blue  rounded items-center justify-center">
+        <div className="cursor-pointer mb-5 flex w-[580px] max-sm:w-[335px] gap-4 h-[58px] max-sm:h-[42px]  text-white max-sm:text-xs text-xl bg-blue max-sm:rounded-base items-center justify-center rounded-[5px]">
           <Spinner status={loading}>
-            <button onClick={handleClick} disabled={date.length >= totalElem} type="button" className="w-[580px] gap-4 h-[58px] items-center align-middle">
+            <button onClick={handleClick} disabled={date.length >= totalElem} type="button" className="w-full gap-4 h-full items-center align-middle">
               Показать еще
               {' '}
               {count}
