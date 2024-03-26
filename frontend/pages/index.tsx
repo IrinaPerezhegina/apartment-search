@@ -31,6 +31,7 @@ const HomePage: NextPage = () => {
       max: 0,
     },
   });
+  const [move, setMove] = useState<boolean>(true);
   const [page, setPage] = useState(1);
   const [count, setCount] = useState<number>();
   const [totalElem, setTotalElem] = useState<number>();
@@ -40,7 +41,7 @@ const HomePage: NextPage = () => {
     projects: { value: 'все', id: 1 }, rooms: NaN, price: { min: 0, max: 0 }, square: { min: 0, max: 0 },
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async (newParams = {}, replaceHistory = false) => {
     const params = { ...queryParams, ...newParams };
@@ -59,7 +60,7 @@ const HomePage: NextPage = () => {
     const resFlats = await fetch(`http://localhost:8083/api/v1/flats?${new URLSearchParams(apiParams)}`);
 
     const resFilters = await fetch(`http://localhost:8083/api/v1/filters?${new URLSearchParams(apiParams)}`);
-    const { data, meta } = await resFlats.json().finally(() => console.log(params, newParams, valueParams));
+    const { data, meta } = await resFlats.json();
 
     const { data: dataFilters } = await resFilters.json();
     const {
@@ -118,6 +119,14 @@ const HomePage: NextPage = () => {
     });
     // Установка параметров и загрузка данных
     fetchData({ page: 1 });
+  };
+
+  const closeFilterMobile = (event: MouseEvent) => {
+    event.preventDefault();
+    setMove((prev) => !prev);
+    // fetchData({ 'f[projects][]': 5 });
+    // setPage((prev) => prev + 1);
+    // setFetching((prev) => !prev);
   };
 
   const handleClick = (event: MouseEvent) => {
@@ -233,11 +242,13 @@ const HomePage: NextPage = () => {
   }, []);
 
   return (
-    <div className="container min-h-[1920px] max-sm:pt-4 max-sm:pb-20 max-sm:px-5 px-1 pt-8 pb-8 mx-auto">
-      <h4 className="max-sm:text-2xl max-sm:font-semibold">
-        ПЛАНИРОВКИ
-      </h4>
-      <Layout total={totalElem} resetParams={resetParams}>
+    <div className="container w-auto max-sm:pt-4  max-sm:pb-20 max-sm:px-0 px-1 pt-8 pb-8 mx-auto">
+      <Layout
+        closeFilterMobile={closeFilterMobile}
+        total={totalElem}
+        resetParams={resetParams}
+        move={move}
+      >
         <Select projects={dataFilter.projects} onChange={handleChange} name="projects" value={valueParams.projects.value} />
         <Checkbox rooms={dataFilter.rooms} onChange={handleChange} name="rooms" value={valueParams.rooms} />
         <DoubleRangeInput
@@ -257,23 +268,26 @@ const HomePage: NextPage = () => {
           onChange={handleChange}
         />
       </Layout>
-
-      <div className="pt-12  max-sm:pt-2 basis-1/3 h-screen max-sm:gap-2 gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
-        {date.map((el) => (
-          <Item item={el} key={el.id} />
-        ))}
-        <div className="cursor-pointer mb-5 flex w-[580px] max-sm:w-[335px] gap-4 h-[58px] max-sm:h-[42px]  text-white max-sm:text-xs text-xl bg-blue max-sm:rounded-base items-center justify-center rounded-[5px]">
-          <Spinner status={loading}>
-            <button onClick={handleClick} disabled={date.length >= totalElem} type="button" className="w-full gap-4 h-full items-center align-middle">
-              Показать еще
-              {' '}
-              {count}
-              {' '}
-              из
-              {' '}
-              {(totalElem) - (date.length)}
-            </button>
-          </Spinner>
+      <div className={move && 'max-sm:hidden'}>
+        <div className="pt-12  max-sm:pt-2 basis-1/3 h-screen max-sm:gap-2 gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
+          {date.map((el) => (
+            <Item item={el} key={el.id} />
+          ))}
+          <div className="">
+            <div className=" cursor-pointer mb-10 flex w-[580px] max-sm:w-[335px] gap-4 h-[58px] max-sm:h-[42px]  text-white max-sm:text-xs text-xl bg-blue max-sm:rounded-base items-center justify-center rounded-[5px]">
+              <Spinner status={loading}>
+                <button onClick={handleClick} disabled={date.length >= totalElem} type="button" className="w-full gap-4 h-full items-center align-middle ">
+                  Показать еще
+                  {' '}
+                  {count}
+                  {' '}
+                  из
+                  {' '}
+                  {(totalElem) - (date.length)}
+                </button>
+              </Spinner>
+            </div>
+          </div>
         </div>
       </div>
     </div>
