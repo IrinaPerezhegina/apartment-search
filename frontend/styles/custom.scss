@@ -3,6 +3,14 @@
     position: relative;
     width: 410px;
     margin: auto;
+    @media screen and (max-width: 450px) {
+      width: 335px;
+     
+    }
+    @media screen and (max-width: 340px) {
+      width:308px;
+     
+    }
    
   }
   
@@ -32,13 +40,7 @@
     bottom: 0px;
   }
   
-//   .slider__left-value,
-//   .slider__right-value {
-//     color: #dee2e6;
-//     font-size: 12px;
-//     margin-top: 20px;
-//   }
-  
+
  
   
   /* Removing the default appearance */
@@ -54,6 +56,14 @@
     height: 0;
     width: 410px;
     outline: none;
+    @media screen and (max-width: 450px) {
+      width: 335px;
+     
+    }
+    @media screen and (max-width: 340px) {
+      width:308px;
+     
+    }
   }
   
   .thumb--zindex-3 {

@@ -87,7 +87,7 @@ const DoubleScrollBar = ({
   return (
     <div className="flex flex-col">
       <p className="text-md text-grey font-ev max-sm:text-2xxs">{label}</p>
-      <div className="mt-2 flex items-center justify-around h-[55px] w-[428px] max-sm:w-[335px] border-black-100 border-t border-l border-r border-b relative  rounded-base">
+      <div className="mt-2 flex items-center justify-around h-[55px] w-[428px] max-sm:w-full border-black-100 border-t border-l border-r border-b relative  rounded-base">
         <p className="text-lg font-ev max-sm:text-xs">
           от
           {' '}

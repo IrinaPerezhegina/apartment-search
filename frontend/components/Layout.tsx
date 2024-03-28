@@ -17,13 +17,13 @@ const Layout = (
     resetParams: React.MouseEventHandler,
     closeFilterMobile: React.MouseEventHandler },
 ) => (
-  <div className="justify-center flex flex-col max-sm:pl-1 border-b max-sm:border-none w-full max-sm:w-[335px] min-h-[272px] max-sm:min-h-[74px]">
+  <div className="flex flex-col max-sm:pl-1 border-b max-sm:border-none w-full min-h-[350px] max-sm:min-h-[74px]">
     <div className={move ? 'max-sm:hidden' : 'flex'}>
-      <h4 className="max-sm:text-2xl max-sm:font-semibold pt-1">
+      <h4 className="max-sm:text-2xl  text-9xl max-sm:font-semibold">
         ПЛАНИРОВКИ
       </h4>
     </div>
-    <div className={!move ? 'max-sm:hidden hidden' : 'hidden'}>
+    <div className={!move ? 'max-sm:hidden hidden' : 'max-sm:block hidden'}>
       <div className="flex justify-end pt-1">
         <Image onClick={closeFilterMobile} className="" src={close} width={30} height={30} alt="" />
       </div>
@@ -31,32 +31,31 @@ const Layout = (
         Фильтр
       </h4>
     </div>
-    <div className={move ? 'justify-center  flex-wrap max-sm:gap-[35px] gap-5 flex pt-[53px] max-sm:pt-9 pb-10 max-sm' : 'hidden'}>
+    <div className={move ? 'max-sm:flex flex-wrap justify-center max-sm:gap-[35px] flex gap-5 pt-[53px] max-sm:pt-9 pb-10' : 'flex flex-wrap justify-center max-sm:gap-[35px] gap-5 pt-[53px] max-sm:pt-9 pb-10 max-sm:hidden '}>
       {children}
     </div>
     <div className={!move && 'max-sm:hidden'}>
-      <button type="button" onClick={closeFilterMobile} className="max-sm:mt-3 max-sm:mb-10 max-sm:w-[335px] max-sm:text-xs gap-1  max-sm:flex  cursor-pointer   hidden max-sm:h-[42px]  text-white bg-blue max-sm:rounded-base items-center justify-center">
+      <button type="button" onClick={closeFilterMobile} className="max-sm:mt-3 max-sm:mb-10 max-sm:w-[335px] max-sm:text-xs gap-1  max-sm:flex  cursor-pointer  hidden max-sm:h-[42px]  text-white bg-blue max-sm:rounded-base items-center justify-center">
         Смотреть квартиры
       </button>
     </div>
-    <div className=" flex gap-3 justify-between pt-2 pl-13 pr-2 max-sm:hidden">
-
-      <div className="text-md font-ev text-[#040306]">
-        Найдено
+    <div className="pt-2 max-sm:hidden grid grid-cols-7">
+      <div className="text-md font-ev text-[#040306] col-start-4 justify-self-end pr-2">
+        <span>Найдено </span>
         {' '}
-        {total}
+        <span>{total}</span>
         {' '}
-        квартир
+        <span> квартир</span>
       </div>
-      <div className="items-left"><Button onReset={resetParams} /></div>
+      <div className="col-start-7 justify-self-end"><Button onReset={resetParams} /></div>
     </div>
-    <div className={move ? 'max-sm:hidden hidden' : 'block'}>
+    <div className={move ? 'max-sm:hidden hidden' : 'max-sm:block hidden'}>
       <div
-        className="max-sm:mt-10 max-sm:mb-9 max-sm:w-[335px] max-sm:text-xs gap-1 max-sm:flex max-sm:h-[42px] justify-center text-white bg-blue max-sm:rounded-base"
+        className="max-sm:mt-10 max-sm:mb-9 max-sm:text-xs gap-1 max-sm:flex max-sm:h-[42px] justify-center text-white bg-blue max-sm:rounded-base"
       >
-        <button type="button" onClick={closeFilterMobile} className="max-sm:w-full max-sm:h-full content-center flex  gap-2">
+        <button type="button" onClick={closeFilterMobile} className="max-sm:w-full max-sm:h-full flex justify-center pt-3 gap-1">
           <span>Фильтр</span>
-          <Image className="" src={filter} width={14} height={16} alt="" />
+          <Image className="pt-[1px]" src={filter} width={16} height={20} alt="" />
         </button>
       </div>
     </div>

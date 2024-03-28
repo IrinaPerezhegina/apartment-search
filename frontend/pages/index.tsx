@@ -124,16 +124,12 @@ const HomePage: NextPage = () => {
   const closeFilterMobile = (event: MouseEvent) => {
     event.preventDefault();
     setMove((prev) => !prev);
-    // fetchData({ 'f[projects][]': 5 });
-    // setPage((prev) => prev + 1);
-    // setFetching((prev) => !prev);
   };
 
   const handleClick = (event: MouseEvent) => {
     event.preventDefault();
-    // fetchData({ 'f[projects][]': 5 });
-    // setPage((prev) => prev + 1);
-    // setFetching((prev) => !prev);
+    setPage((prev) => prev + 1);
+    fetchData({ page });
   };
 
   const handleChange = (target : HTMLSelectElement | HTMLInputElement) => {
@@ -242,7 +238,7 @@ const HomePage: NextPage = () => {
   }, []);
 
   return (
-    <div className="container w-auto max-sm:pt-4  max-sm:pb-20 max-sm:px-0 px-1 pt-8 pb-8 mx-auto">
+    <div className="container w-auto h-auto max-sm:pt-4 max-sm:pb-20 max-sm:px-0 pt-8 pb-8 mx-auto px-1">
       <Layout
         closeFilterMobile={closeFilterMobile}
         total={totalElem}
@@ -269,12 +265,12 @@ const HomePage: NextPage = () => {
         />
       </Layout>
       <div className={move && 'max-sm:hidden'}>
-        <div className="pt-12  max-sm:pt-2 basis-1/3 h-screen max-sm:gap-2 gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
+        <div className="pt-12 max-sm:pt-2 basis-1/3 h-screen max-sm:gap-2 gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
           {date.map((el) => (
             <Item item={el} key={el.id} />
           ))}
-          <div className="">
-            <div className=" cursor-pointer mb-10 flex w-[580px] max-sm:w-[335px] gap-4 h-[58px] max-sm:h-[42px]  text-white max-sm:text-xs text-xl bg-blue max-sm:rounded-base items-center justify-center rounded-[5px]">
+          <div className="max-sm:w-full">
+            <div className=" cursor-pointer mb-10 flex  w-[580px] max-sm:w-[335px] gap-4 h-[58px] max-sm:h-[42px]  text-white max-sm:text-xs text-xl bg-blue max-sm:rounded-base items-center justify-center rounded-[5px]">
               <Spinner status={loading}>
                 <button onClick={handleClick} disabled={date.length >= totalElem} type="button" className="w-full gap-4 h-full items-center align-middle ">
                   Показать еще
