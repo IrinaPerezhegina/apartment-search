@@ -16,7 +16,7 @@ export type queryParamsProps = {
   'f[price][max]':number,
   'f[square][min]':number,
   'f[square][max]':number,
-  page:number,
+  'page':number,
 };
 
 export type valueParamsProps = {

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Button from './ui/Button';
 import filter from '../public/filter.png';
 import close from '../public/close.png';
+import Spinner from './Spinner';
 
 const Layout = (
   {
@@ -10,10 +11,12 @@ const Layout = (
     children, total,
     move,
     closeFilterMobile,
+    status,
   }
   :{ move:boolean,
     children:ReactNode,
     total:number,
+    status:boolean
     resetParams: React.MouseEventHandler,
     closeFilterMobile: React.MouseEventHandler },
 ) => (
@@ -34,18 +37,24 @@ const Layout = (
     <div className={move ? 'max-sm:flex flex-wrap justify-center max-sm:gap-[35px] flex gap-5 pt-[53px] max-sm:pt-9 pb-10' : 'flex flex-wrap justify-center max-sm:gap-[35px] gap-5 pt-[53px] max-sm:pt-9 pb-10 max-sm:hidden '}>
       {children}
     </div>
-    <div className={!move && 'max-sm:hidden'}>
+    <div className={!move ? 'max-sm:hidden' : ''}>
       <button type="button" onClick={closeFilterMobile} className="max-sm:mt-3 max-sm:mb-10 max-sm:w-[335px] max-sm:text-xs gap-1  max-sm:flex  cursor-pointer  hidden max-sm:h-[42px]  text-white bg-blue max-sm:rounded-base items-center justify-center">
         Смотреть квартиры
       </button>
     </div>
     <div className="pt-2 max-sm:hidden grid grid-cols-7">
-      <div className="text-md font-ev text-[#040306] col-start-4 justify-self-end pr-2">
-        <span>Найдено </span>
-        {' '}
-        <span>{total}</span>
-        {' '}
-        <span> квартир</span>
+      <div className="text-md font-ev items-center text-[#040306] col-start-4 justify-self-end pr-2 flex">
+        <span>
+          Найдено
+        </span>
+        <Spinner status={status}>
+          <span className="px-2">
+            {total}
+          </span>
+        </Spinner>
+        <span>
+          квартир
+        </span>
       </div>
       <div className="col-start-7 justify-self-end"><Button onReset={resetParams} /></div>
     </div>
