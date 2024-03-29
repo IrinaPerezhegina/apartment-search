@@ -19,7 +19,7 @@ const Checkbox = ({
   };
 
   return (
-    <div className="">
+    <div className="max-sm:w-full">
       <p className="text-md text-grey font-ev max-sm:text-2xxs">Укажите количество комнат</p>
       <div className="max-sm:w-full flex max-sm:gap-[23px] gap-[20px] justify-between pt-2 max-sm:pt-3">
         {rooms.map((room) => (

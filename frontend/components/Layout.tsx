@@ -22,12 +22,12 @@ const Layout = (
 ) => (
   <div className="flex flex-col max-sm:pl-1 border-b max-sm:border-none w-full min-h-[350px] max-sm:min-h-[74px]">
     <div className={move ? 'max-sm:hidden' : 'flex'}>
-      <h4 className="max-sm:text-2xl  text-9xl max-sm:font-semibold">
+      <h4 className="max-sm:text-2xl  text-9xl">
         ПЛАНИРОВКИ
       </h4>
     </div>
     <div className={!move ? 'max-sm:hidden hidden' : 'max-sm:block hidden'}>
-      <div className="flex justify-end pt-1">
+      <div className="flex justify-end pt-1  ">
         <Image onClick={closeFilterMobile} className="" src={close} width={30} height={30} alt="" />
       </div>
       <h4 className="max-sm:text-2xl max-sm:pt-6">
@@ -37,8 +37,8 @@ const Layout = (
     <div className={move ? 'max-sm:flex flex-wrap justify-center max-sm:gap-[35px] flex gap-5 pt-[53px] max-sm:pt-9 pb-10' : 'flex flex-wrap justify-center max-sm:gap-[35px] gap-5 pt-[53px] max-sm:pt-9 pb-10 max-sm:hidden '}>
       {children}
     </div>
-    <div className={!move ? 'max-sm:hidden' : ''}>
-      <button type="button" onClick={closeFilterMobile} className="max-sm:mt-3 max-sm:mb-10 max-sm:w-[335px] max-sm:text-xs gap-1  max-sm:flex  cursor-pointer  hidden max-sm:h-[42px]  text-white bg-blue max-sm:rounded-base items-center justify-center">
+    <div className={!move ? 'max-sm:hidden w-full' : 'w-full'}>
+      <button type="button" onClick={closeFilterMobile} className="max-sm:mt-3 max-sm:mb-10 max-sm:w-full max-sm:text-xs gap-1 max-sm:flex  cursor-pointer  hidden max-sm:h-[42px]  text-white bg-blue max-sm:rounded-base items-center justify-center">
         Смотреть квартиры
       </button>
     </div>

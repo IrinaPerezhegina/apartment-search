@@ -11,7 +11,6 @@ import { debounce } from 'lodash';
    max_range: number,
    min: number,
    max: number,
-
  };
 
 const DoubleScrollBar = ({

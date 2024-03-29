@@ -9,6 +9,7 @@ import Layout from '@/components/Layout';
 import Checkbox from '@/components/ui/Checkbox';
 import DoubleRangeInput from '@/components/ui/DoubleScrollBar';
 import exclude from '@/helper';
+import NoTFound from '@/components/NotFound';
 import Item from '../components/Item';
 import {
   validParamsProps, queryParamsProps, valueParamsProps,
@@ -54,7 +55,6 @@ const HomePage: NextPage = () => {
     },
   });
   const [move, setMove] = useState<boolean>(true);
-  const [page, setPage] = useState<number>(1);
   const [count, setCount] = useState<number>();
   const [totalElem, setTotalElem] = useState<number>();
   const [date, setDate] = useState([]);
@@ -62,14 +62,13 @@ const HomePage: NextPage = () => {
   const [valueParams, setValueParams] = useState<valueParamsProps>({
     projects: { value: 'все', id: 1 }, rooms: NaN, price: { min: 0, max: 0 }, square: { min: 0, max: 0 },
   });
-
   const [loading, setLoading] = useState(true);
 
   const fetchData = async (newParams = {}, replaceHistory = false) => {
     const params = { ...queryParams, ...newParams };
     setLoading(true);
     // Сохранить параметры в адрес страницы
-    const urlSearch = new URLSearchParams(exclude(params, { page: '' })).toString();
+    const urlSearch = new URLSearchParams(exclude(params, { })).toString();
     const url = window.location.pathname + (urlSearch ? `?${urlSearch}` : '') + window.location.hash;
     if (replaceHistory) {
       window.history.replaceState({}, '', url);
@@ -77,14 +76,12 @@ const HomePage: NextPage = () => {
       window.history.pushState({}, '', url);
     }
 
-    const apiParams = exclude(params, { page: '' });
+    const apiParams = exclude(params, { });
 
     const resFlats = await fetch(`http://localhost:8083/api/v1/flats?${new URLSearchParams(apiParams)}`);
     const resFilters = await fetch(`http://localhost:8083/api/v1/filters?${new URLSearchParams(apiParams)}`);
     const { data, meta } = await resFlats.json();
-
-    const { data: dataFilters } = await resFilters.json().finally(() => console.log(queryParams, page));
-
+    const { data: dataFilters } = await resFilters.json();
     const {
       projects, rooms, price, square,
     } = dataFilters;
@@ -153,7 +150,8 @@ const HomePage: NextPage = () => {
     setMove((prev) => !prev);
   };
 
-  const handleClick = () => {
+  const handleClick = (event: MouseEvent) => {
+    event.preventDefault();
     setQueryParams((prevState) => ({
       ...prevState,
       page: prevState.page + 1,
@@ -306,22 +304,23 @@ const HomePage: NextPage = () => {
       </Layout>
       <div className={move ? 'max-sm:hidden' : ''}>
         <div className="pt-12 max-sm:pt-2 basis-1/3 h-screen max-sm:gap-2 gap-y-5 justify-center items-center flex gap-5 flex-wrap box-border">
-          {date.map((el) => (
-            <Item item={el} key={el.id} />
-          ))}
-          <div className="max-sm:w-full">
-            <div className=" cursor-pointer mb-10 flex  w-[580px] max-sm:w-[335px] gap-4 h-[58px] max-sm:h-[42px]  text-white max-sm:text-xs text-xl bg-blue max-sm:rounded-base items-center justify-center rounded-[5px]">
-              <Spinner status={loading}>
-                <button onClick={handleClick} disabled={date.length >= totalElem} type="button" className="w-full gap-4 h-full items-center align-middle ">
-                  Показать еще
-                  {' '}
-                  {count}
-                  {' '}
-                  из
-                  {' '}
-                  {(totalElem) - (date.length)}
-                </button>
-              </Spinner>
+          {date.length === 0 ? <NoTFound /> : (date.map((el) => (
+            <Item item={el} key={el.id} />)))}
+          <div className="pt-6 w-full flex justify-center">
+            <div className={(totalElem) - (date.length) === 0 ? 'hidden' : 'max-sm:w-full w-[580px]'}>
+              <div className=" cursor-pointer mb-6 flex w-auto gap-4 h-[58px] max-sm:h-[42px]  text-white max-sm:text-xs text-xl bg-blue max-sm:rounded-base items-center justify-center rounded-[5px]">
+                <Spinner status={loading}>
+                  <button onClick={handleClick} disabled={date.length >= totalElem} type="button" className="w-full gap-4 h-full items-center align-middle ">
+                    Показать еще
+                    {' '}
+                    {count}
+                    {' '}
+                    из
+                    {' '}
+                    {(totalElem) - (date.length)}
+                  </button>
+                </Spinner>
+              </div>
             </div>
           </div>
         </div>
