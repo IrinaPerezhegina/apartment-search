@@ -60,3 +60,18 @@ export type filterParamsProps = {
     max_range: number,
   },
 };
+
+export type ItemProps = {
+
+  id:number,
+  project_title?:string,
+  rooms:number,
+  studio?:boolean,
+  price:string,
+  old_price: string,
+  square:string,
+  release_dates: string,
+  floor: string,
+  image: string,
+
+};

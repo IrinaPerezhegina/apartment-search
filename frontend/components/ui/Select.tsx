@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { ChangeEvent, memo } from 'react';
+import { ChangeEvent } from 'react';
 import Image from 'next/image';
 import { nanoid } from 'nanoid';
 import arrow from '../../public/arrow.png';
@@ -46,4 +46,4 @@ const Select = ({
     </div>
   );
 };
-export default memo(Select);
+export default Select;
